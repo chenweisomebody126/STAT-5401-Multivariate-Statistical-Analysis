@@ -1,0 +1,25 @@
+{
+    "contents" : "",
+    "created" : 1461333283042.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "6FA4815C",
+    "lastKnownWriteTime" : 4329736704,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "bq71ykczjr",
+        "caption" : "oilnew_t",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=oilnew_t&cache_key=bq71ykczjr",
+        "displayedObservations" : "56",
+        "environment" : "",
+        "object" : "oilnew_t",
+        "totalObservations" : "56",
+        "variables" : "5"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

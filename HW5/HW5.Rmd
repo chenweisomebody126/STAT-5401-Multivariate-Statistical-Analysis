@@ -1,0 +1,130 @@
+---
+title: "HW5"
+output: html_document
+---
+### Wei Chen
+### ID:5207679
+
+### Ex4.12
+Let X~2~,...X~60~ be a random sample of size 60 from a four-variate normal distribution having mean $\mu$ and covariance $\Sigma$. Specify each of the following completely.    
+(a)The distribution of $\bar{X}$    
+(b)The distribution of ($X_{1}-\mu$)'$\Sigma^{-1}$($X_{1}-\mu$)   
+(c)The distribution of n($\bar{X}-\mu$)'$\Sigma^{-1}$($\bar{X}-\mu$)  
+(d)The approximate distribution of n($\bar{X}-\mu$)'$S^{-1}$($\bar{X}-\mu$)     
+Solution:   
+(a)$\bar{X}$ ~ $N_{4}$($\mu$,$\frac{1}{60}$$\Sigma$)    
+(b)($X_{1}-\mu$)'$\Sigma^{-1}$($X_{1}-\mu$)  ~ $\chi_{4}$($\alpha$)   
+(c)n($\bar{X}-\mu$)'$\Sigma^{-1}$($\bar{X}-\mu$)  ~  $\chi_{4}$($\alpha$)     
+(d)As the CLT, approximately n($\bar{X}-\mu$)'$S^{-1}$($\bar{X}-\mu$) ~d  $\chi_{4}$($\alpha$)    
+Accurately, it follows (60-1)*4/(60-4)F~4,60-4~, which is 4.2F~4,56~    
+
+### Ex4.41    
+Consider the data on show removal in Ex3.20   
+(a)Consider on any possible outliers in a scatter plot of the original variables       
+(b)Determine the power transformation $\hat{\lambda_{1}}$ that makes the x~1~ values approximately normal.Construct a Q-Q plot of the transformed observations.    
+(c)Determine the power transformation $\hat{\lambda_{2}}$ that makes the x~2~ values approximately normal.Construct a Q-Q plot of the transformed observations.       
+(d)Determinr the power transformation for approximately bivariate normality using (4-40)      
+Solution:     
+(a) 
+First load the data on snow removal
+```{r}
+snow <-read.table('http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t3-2.dat')
+colnames(snow)<-c('x1','x2')
+library(car)
+scatterplot(snow$x1,snow$x2,smoother= FALSE, reg.line=FALSE)
+```
+We can see two points with large x1 and small x2 and one point with small x1 and large x2, which may be outliers.
+(b)   
+First check the optimal value of lambda   
+```{r}
+library(MASS)
+res<-boxcox(snow$x1~1, lambda=seq(-2,2,0.01) )
+print(lambda<-with(res,x[which.max(y)]))
+```
+Choose 0.05 as the $\lambda_{1}$, conduct QQplot
+```{r}
+x1_transformed<-(snow$x2^(0.05)-1)/(0.05)
+qqnorm(x1_transformed,main="After transformed x1")
+qqline(x1_transformed)
+```
+      
+(c)   
+```{r}
+res<-boxcox(snow$x2~1, lambda=seq(-2,2,0.01) )
+print(lambda<-with(res,x[which.max(y)]))
+```
+Choose -0.7 as the $\lambda_{2}$
+```{r}
+x2_transformed<-(snow$x2^(-0.7)-1)/(-0.7)
+qqnorm(x2_transformed,main="After transformed x2")
+qqline(x2_transformed)
+```
+    
+(d)   
+```{r}
+res<-powerTransform(with(snow,cbind(x1,x2)) ~1)
+summary(res)
+```
+Thus the power tranformation for approximate bivariate normality is $\lambda_{1}$=0.25,$\lambda_{2}$=-0.75    
+
+## Ex5.1
+(a)Evaluating T^2^, for testing H~0~: $\mu$'=[7,11], using the data
+\[X= \left( \begin{array}{ccc}
+2 & 12\\
+8 & 9 \\
+6 & 9 \\
+8 & 10 \end{array} \right)\] 
+(b)Specify the distribution of T^2^ for the situation in (a)    
+(c)Using (a) and (b), test H~0~ at the %\alpha% =0.05 level. What conclusion do you reach?    
+Solution:   
+(a)
+```{r}
+x_51 <-matrix(c(2, 8, 6, 8,12,9, 9, 10),nrow=4, ncol=2)
+xbar_51 <-colMeans( x_51)
+mu_51<-c(7,11)
+scov_51<-cov(x_51)
+print(T2_51<- 4*t(xbar_51-mu_51) %*% solve(scov_51) %*% (xbar_51-mu_51))
+```
+            
+(b)
+T2_51 ~ (4-1)*2/(4-2) $F_{2,4-2}$($\alpha$), which is 3$F_{2,2}$($\alpha$)    
+(c) 
+Calculate the quantile for F distrbution
+```{r}
+3*qf(1-0.05, df1=2,df2=2)
+```
+Since T2_51< 0.05th quantile, we can not reject the Null hypothesis.
+
+### Ex 5.3
+(a)Use expression (5-15) to calculate the T2 in Exercise 5.1    
+(b)Use the data in Exercise 5.1 to evaluate $\Lambda$ in (5-13). Also, evaluate Wilks' lambda.   
+Solution:   
+(a)
+```{r}
+n=4
+Sigma.hat <- (n-1) * scov_51/n
+Sigma0.hat <- Sigma.hat + (xbar_51 - mu_51) %*% t(xbar_51 -mu_51)
+print(T2 <- (n - 1) * det(Sigma0.hat)/det(Sigma.hat) -(n - 1))
+```
+(b)
+```{r}
+print(LR_Statistic<-(det(Sigma.hat)/det(Sigma0.hat))^(n/2))
+print(Wilk_lambda<-det(Sigma.hat)/det(Sigma0.hat))
+```
+### Problem2
+(a)   
+Since We have known population covariance is $\Sigma_{0}$, the dimension of $\theta_{0}$ space is 0.      
+The loglikelihood function is $\ell_{0}$=$\ell$($\mu_{0}$,$\Sigma_{0}$)= -$\frac{n}{2}$log|2$\pi\Sigma_{0}$|-$\frac{1}{2}$tr($\Sigma_{0}^{-1}\sum_{i=1}^{n}$($X_{i}-\mu_{0}$)'($X_{i}-\mu_{0}$))+const        
+$\ell_{1}$=$\ell$($\bar{X}$,$\Sigma_{0}$)= -$\frac{n}{2}$log|2$\pi\Sigma_{0}$|-$\frac{1}{2}$tr($\Sigma_{0}^{-1}\sum_{i=1}^{n}$($X_{i}-\bar{X}$)'($X_{i}-\bar{X}$))+const    
+$\ell_{1}$-$\ell_{0}$=tr($\Sigma_{0}^{-1}\sum_{i=1}^{n}$($X_{i}-\mu_{0}$)'($X_{i}-\mu_{0}$))-tr($\Sigma_{0}^{-1}\sum_{i=1}^{n}$($X_{i}-\bar{X}$)'($X_{i}-\bar{X}$)) =$\frac{n}{2}$tr($\Sigma_{0}^{-1}$($\bar{X}-\mu_{0}$)'($\bar{X}-\mu_{0}$)) =n($\bar{X}-\mu_{0}$)'$\Sigma^{-1}$($\bar{X}-\mu_{0}$)   
+-2log$\lambda$=2($\ell_{1}$-$\ell_{0}$)=n($\bar{X}-\mu_{0}$)'$\Sigma_{-1}$($\bar{X}-\mu_{0}$) ~ $\chi_{p}^{2}$   
+(b)   
+Let Y~i~=a'X~i~   
+Since X~i~ are iid observations from N~p~($\mu,\Sigma_{0}$), Y~i~ are iid N(a'$\mu$, a'$\Sigma_{0}$a)   
+The null hyposhesis H~0~: $\mu=\mu_{0}$ is true ,if and only if all null hypothesis of the form H~0~^a^: a'$\mu$=a'$\mu_{0}$ is true.   
+$\bar{Y}$ ~ N~p~(a'$\mu$,$\frac{1}{n}a'\Sigma_{0}a$)    
+$\frac{\bar{Y}-a'\mu_{0}}{\sqrt{\frac{1}{n}a'\Sigma_{0}a}}$ ~ N(a'($\mu-\mu_{0}$),1)    
+To find maximum range of previous foluma, take the square   
+$max_{a\not= 0}$($\frac{\bar{Y}-a'\mu_{0}}{\sqrt{\frac{1}{n}a'\Sigma_{0}a}}$)^2^ =n* $max_{a\not= 0}$($\frac{(a'(\bar{X}-\mu_{0})^{2}}{a'\Sigma_{0}a}$) =n($\bar{X}-\mu_{0}$)'$\Sigma_{0}^{-1}$($\bar{X}-\mu_{0}$) ~ $\chi_{p}^{2}$        
+
+

@@ -1,0 +1,141 @@
+---
+title: "HW7"
+output: html_document
+---
+###Wei Chen, 5207679
+### Q6.2
+Using the information in Example 6.1. Construct the 95% Bonferroni simultaneous intervals for the components of the mean difference vector $\delta$. Compare the lengths of these intervals with those of te simultaneous intervals constrcuted n the example.      
+
+Solution:
+```{r}
+URL='http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t6-1.dat'
+wastewater=read.table(URL, col.names=c('comml.BOD','comml.SS','state.BOD','state.SS'))
+Diff<-wastewater[,c(1,2)]-wastewater[,c(3,4)]
+colnames(Diff)<- c('diff.BOD','diff.SS')
+dbar<- colMeans(Diff)
+Sd<-cov(Diff)
+n<-nrow(Diff)
+p<-ncol(Diff)
+mu0<-c(0,0)
+alpha<-1-0.95
+radius<-qt(alpha/(2*p),df=n-1,lower.tail=FALSE)
+print(lower_bon_w<- dbar-radius*sqrt(diag(Sd)/n))
+print(upper_bon_w<-dbar+radius*sqrt(diag(Sd)/n))
+```
+We find that 95% T^2^ simultaneous  intervals is wider than 95% Bonferroni simultaneous intervals.     
+
+### Q6.3
+The data corresponding to sample 8 in Table 6.1 seem unusually large. Remove sample 8. Construct a joint 95% confidence region for the mean difference vector $\delta$ and the 95% Bonferroni simultaneous intervals for the components of the mean difference vector. Are the results consistent with a test of H~0~: $\delta$? Discuss. DOes the 'outlier' make a difference in the analysis of these data?      
+Solution:
+```{r}
+newDiff<-Diff[-8,]
+new_dbar<-colMeans(newDiff)
+newSd<- cov(newDiff)
+new_n<-nrow(newDiff)
+new_p<-ncol(newDiff)
+radius_bon_new_w<-qt(alpha/(2*new_p),df=new_n-1, lower.tail=FALSE)
+print(lower_bon_new_w<- new_dbar- radius_bon_new_w*sqrt(diag(newSd)/new_n))
+print(upper_bon_new_w<- new_dbar+ radius_bon_new_w*sqrt(diag(newSd)/new_n))
+radius_T2_new_w<-sqrt(new_p*(new_n-1)/(new_n-new_p)*qf(alpha, df1=new_p, df2=new_n-new_p,lower.tail=FALSE))
+print(lower_T2_new_w<- new_dbar-radius_T2_new_w*sqrt(diag(newSd)/new_n))
+print(upper_T2_new_w<- new_dbar+radius_T2_new_w*sqrt(diag(newSd)/new_n))
+```
+
+After removing the sample 8, the simultaneous intervals of both T^2^ and Bonferroni no longer cover [0,0]. So we need to reject the null hypothesis and yes, the "outlier" Does make a difference during the analysis. 
+
+### Q6.4
+Refer to Example 6.1
+(a)Redo the analysis in Example 6.1 after transforming the pairs of observations to ln(BOD) and ln(SS)      
+(b)Construct the 95% Bonferroni simultaneous intervals for the components of the mean vector $\delta$ of transformed variables       
+(c)Discuss any possible violation of the assumption of a bivariate normal distribution for the difference vectors of transformed observations.      
+
+Solution:   
+(a)
+```{r}
+wastewater<-log(wastewater)
+Diff<-wastewater[,c(1,2)]-wastewater[,c(3,4)]
+dbar<- colMeans(Diff)
+Sd<-cov(Diff)
+n<-nrow(Diff)
+p<-ncol(Diff)
+mu0<-c(0,0)
+alpha<-1-0.95
+radius_T2<- sqrt(p*(n-1)/(n-p)*qf(alpha, df1=p,df2=n-p, lower.tail=FALSE))
+print(lower_T2<-dbar-radius_T2*sqrt(diag(Sd)/n))
+print(upper_T2<-dbar+radius_T2*sqrt(diag(Sd)/n))
+```
+(b)
+```{r}
+radius_bon<-qt(alpha/(2*p),df=n-1,lower.tail=FALSE)
+print(lower_bon_w<- dbar-radius_bon*sqrt(diag(Sd)/n))
+print(upper_bon_w<-dbar+radius_bon*sqrt(diag(Sd)/n))
+```
+(c)
+```{r}
+library(car)
+colnames(Diff)<- c('diff.lnBOD','diff.lnSS')
+#dev.off()
+scatterplot(diff.lnBOD ~diff.lnSS, data=Diff, smoother=FALSE, reg.line=FALSE)
+```
+
+Note that scatterplot of paired variables is not elliptical shape which implies it violates bivariate normality.     
+### Q6.9
+Using the constrast matrix C in (6-13), verify the relationships d~j~=Cx~j~, $\bar{d}$=C$\bar{x}$, and S~d~=CSC' in (6-14)    
+
+
+Solution:     
+(1)
+First we prove $\left[ \begin{array}{cc} d_{1} & \dots & d_{j}& \dots & d_{N} \end{array} \right]$=$D_{p*N}$=$C_{p*2p}$$X_{2p*N}$= $C_{p*2p}$$\left[ \begin{array}{c} X^{treat1}_{p*N} \\ X^{treat2}_{p*N} \end{array} \right]$, which means       
+\[
+\left[ \begin{array}{cc} d_{1} & \dots & d_{j}& \dots & d_{N} \end{array} \right] = \begin{bmatrix}
+    1 & 0 & \dots & 0 &-1 & 0 &\dots & 0 \\
+    0 & 1 & \dots & 0 &0 &-1 & \dots  & 0 \\
+    \vdots & \vdots & \ddots & \vdots & \vdots & \vdots &\ddots &\vdots \\
+    0 & 0 & \dots & 1 & 0 & 0 &\dots  & -1
+\end{bmatrix}
+ \times \left[ \begin{array}{cc} x_{1} & \dots & x_{j}& \dots & x_{N} \end{array} \right]
+, x_{j} = 
+\begin{bmatrix}
+x^{treat1}_{1j}\\
+x^{treat1}_{2j}\\
+\vdots \\
+x^{treat1}_{pj}\\
+x^{treat2}_{1j}\\
+\vdots \\
+x^{treat2}_{pj}
+\end{bmatrix}
+\]
+(2)       
+\[ \bar{d}=\frac{1}{N} \sum_{j}^{N} Cx_{j} =C(\frac{1}{N} \sum_{j}^{N} x_{j})= C \bar{x}\] 
+(3)
+\[ S_{d}=cov(D)=cov(CX)=Ccov(S)C'=CSC' \]
+      
+### Q6.11
+A likelihood argument provides additional support for pooling the two independent sample covraince matrices to estimate a common covariance matrix in the case of two normal populations. Give the likelihood function, L($\mu_{1}$,$\mu_{2}$,$\Sigma$), for two independent samples of sizes n~1~ and n~2~ from N~p~($\mu_{1}$,$\Sigma$) and N~p~($\mu_{2}$,$\Sigma$) populations, repectively. Show that this likelihood is maximized by the choices $\hat{\mu_{1}}$=$\bar{x_{1}}$, $\hat{\mu_{2}}$=$\bar{x_{2}}$ and $\hat{\Sigma}$= $\frac{1}{n_{1}+n_{2}}$[$(n_{1}-1)S_{1}+(n_{2}-1)S_{2}$]= ($\frac{n_{1}+n_{2}-2}{n_{1}+n_{2}}$)$S_{pooled}$         
+
+Solution:  
+
+\[
+\begin{aligned}
+&L(\mu_{1},\mu_{2},\Sigma) \\
+&=Pr(X_{1}|\mu_{1}, \Sigma) \times Pr(X_{2}|\mu_{2},\Sigma)\\
+&=\frac{1}{(2\pi)^{n_{1}p/2} |\Sigma|^{n_{1}/2}} exp(-\frac{1}{2} tr[\Sigma^{-1}(\sum_{i=1}^{n_{1}}(x_{1i}-\bar{x_{1}})(x_{1i}-\bar{x_{1}})') ] )\times exp(\frac{1}{2}n_{1}(\bar{x_{1}}-\mu_{1})'\Sigma^{-1}(\bar{x_{1}}-\mu_{1})) \\
+&\times \frac{1}{(2\pi)^{n_{2}p/2} |\Sigma|^{n_{2}/2}} exp(-\frac{1}{2}  tr[\Sigma^{-1}(\sum_{i=1}^{n_{2}}(x_{2i}-\bar{x_{2}})(x_{2i}-\bar{x_{2}})') ] )\times exp(\frac{1}{2}n_{2}(\bar{x_{2}}-\mu_{2})'\Sigma^{-1}(\bar{x_{2}}-\mu_{2}))
+\end{aligned}
+\]
+In order to maximize $exp(\frac{1}{2}n_{1}(\bar{x_{1}}-\mu_{1})'\Sigma^{-1}(\bar{x_{1}}-\mu_{1})) \times exp(\frac{1}{2}n_{2}(\bar{x_{2}}-\mu_{2})'\Sigma^{-1}(\bar{x_{2}}-\mu_{2}))$，we need to minimize  $n_{1}(\bar{x_{1}}-\mu_{1})'\Sigma^{-1}(\bar{x_{1}}-\mu_{1})) + n_{2}(\bar{x_{2}}-\mu_{2})'\Sigma^{-1}(\bar{x_{2}}-\mu_{2}))$. Since $\Sigma_{-1}$ is a positive definite, $n_{1}(\bar{x_{1}}-\mu_{1})'\Sigma^{-1}(\bar{x_{1}}-\mu_{1})) >= 0$ and $n_{2}(\bar{x_{2}}-\mu_{2})'\Sigma^{-1}(\bar{x_{2}}-\mu_{2})) >=0$. The likelihood is maximized with respect to $\mu_{1}, \mu_{2}$ at $\mu_{1}=\bar{x_{1}}, \mu_{2}=\bar{x_{2}}$.     
+It remains to maximize 
+\[
+\begin{aligned}
+&L(\mu_{1},\mu_{2},\Sigma) \\
+&=\frac{1}{(2\pi)^{n_{1}p/2} |\Sigma|^{n_{1}/2}} exp(-\frac{1}{2} tr[\Sigma^{-1}(\sum_{i=1}^{n_{1}}(x_{1i}-\bar{x_{1}})(x_{1i}-\bar{x_{1}})') ] )\\
+&\times \frac{1}{(2\pi)^{n_{2}p/2} |\Sigma|^{n_{2}/2}} exp(-\frac{1}{2}  tr[\Sigma^{-1}(\sum_{i=1}^{n_{2}}(x_{2i}-\bar{x_{2}})(x_{2i}-\bar{x_{2}})') ] )
+\end{aligned}
+\]
+ By Result 4.10 with $b=(n_{1}+n_{2})/2$ and $B=  \sum_{i=1}^{n_{1}}(x_{1i}-\bar{x_{1}})(x_{1i}-\bar{x_{1}})'+
+\sum_{i=1}^{n_{2}}(x_{2i}-\bar{x_{2}})(x_{2i}-\bar{x_{2}})'
+=(n_{1}+1)S_{1}+(n_{2}+1)S_{2}$, the maximum occurs at $\hat{\Sigma}
+= (1/2b)B=$ $\frac{1}{n_{1}+n_{2}}$$[(n_{1}-1)S_{1}+(n_{2}-1)S_{2}]$$= (\frac{n_{1}+n_{2}-2}{n_{1}+n_{2}})$$S_{pooled}$.
+
+
+

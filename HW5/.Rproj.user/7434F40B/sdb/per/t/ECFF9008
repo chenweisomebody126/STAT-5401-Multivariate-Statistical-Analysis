@@ -1,0 +1,25 @@
+{
+    "contents" : "",
+    "created" : 1457644367298.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "ECFF9008",
+    "lastKnownWriteTime" : 4433285376,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "sqs9iayhhu",
+        "caption" : "T2_51",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=T2_51&cache_key=sqs9iayhhu",
+        "displayedObservations" : 1,
+        "environment" : "",
+        "object" : "T2_51",
+        "totalObservations" : 1,
+        "variables" : 2
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

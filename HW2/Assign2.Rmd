@@ -1,0 +1,253 @@
+---
+title: "Assign2"
+output: html_document
+---
+### *Wei Chen 5207679*
+### *Feb/5/2016* 
+## Problem 1
+### 2.4(p.103)
+(a)
+∵ AA^-1^=I  
+∴ (AA^-1^)'=I'=I  
+∴ (A^-1^)'A'=I  
+∴(A^-1^)'A'(A')^-1^=(A')^-1^  
+∴(A^-1^)'I=(A')^-1^   
+∴(A^-1^)'=(A')^-1^  
+(b)
+∵ (B^-1^A^-1^)AB=B^-1^(A^-1^A)B=B^-1^B=I  
+∴ (B^-1^A^-1^)AB(AB)^-1^=(AB)^-1^ 
+∴ (B^-1^A^-1^)=(AB)^-1^ 
+
+### 2.10(P.104)
+A^-1^=
+```{r, echo=FALSE}
+A<- matrix(c(4, 4.001, 4.001, 4.002), nrow=2, ncol=2)
+B<-matrix(c(4, 4.001, 4.001, 4.002001), nrow=2, ncol=2)
+A_inv<-solve(A)
+B_inv<-solve(B)
+```
+```{r}
+A_inv
+```
+B^-1^=
+```{r}
+B_inv
+```
+To see whether A_inv is -3 times of B_inv
+```{r}
+(-3)*B_inv 
+```
+So -3*B_inv is euqal to A_inv
+
+##2.11(p.104)
+By the definition 2A.24,  
+$|A_{p\times p}|$ =a~11~$\times$$|A_{p-1\times p-1}|$=a~11~$\times$a~22~ $\times$ $|A_{p-2\times p-2}|$ =a~11~$\times$a~22~$\times$a~33~...a~(p-1)(p-1)~$\times$ $|A_{1\times 1}|$=a~11~ $\times$a~22~$\times$a~33~...a~(p-1)(p-1)~$\times$a~pp~
+
+###2.13(p.104)
+Since Q is orthogonal matrix  
+∴QQ'=I  
+∴|QQ'|=|I|  
+∴|Q||Q'|=|I|=1  
+∵ Q is a square matrix  
+∴ |Q|=|Q'|  
+∴ |Q||Q'|=|Q|^2^=1  
+∴ |Q|=+1 or -1  
+
+###2.14(p.104)
+Let $\lambda$ be any eigenvalue of A, then $|A-\lambda I|$ =0   
+So $|Q'||A-\lambda I||Q|$ =0    
+∵ $|A||B|=|AB|$     
+∴ $|Q'||A-\lambda I||Q|$ =$|Q' A-\lambda Q-\lambda Q'Q|$=0  
+∵ Q'Q=I since Q is orthogonal   
+∴ $|Q' AQ-\lambda I|$=0   
+∴ Q' AQ has all the eigenvalues that A has    
+∵ Q' AQ is $p \times p$ dimension which is the same to A    
+∴ Q' AQ can not have more eigenvaue than A    
+∴ Q' AQ and A have the same eigenvalues if Q is orthogonal    
+
+##2.16(p.104)
+Let x be a $p \times 1$ vector, then x'A'Ax will be a scalar.   
+Let y=Ax, y will be $n \times 1$ vector.    
+x'A'Ax= y'y=y~1~^2^+y~2~^2^+...+y~n~^2^ >=0 for all x vector.   
+Thus A'A is neccessarily nonnegative definite.
+
+##2.17
+Let $\lambda$ be the eigenvalue of A  
+According to the eigenvalue deinition, Ae=$lambda$ e, where e is eigenvector.  
+Multipied by e', we get e'Ae=e'$lambda$ e  
+Since A is positive definite  
+e'Ae>0 for e$\neq$ 0   
+e'Ae=e'$lambda$ e=$lambda$>0, since eigenvector is non-zero  
+
+##2.18
+$4x^{1}_{2} +3x^{2}_{2}=2 \sqrt x_{1}x_{2}= x'Ax$, where x=[x~1~ x~2~]',   
+A= \[ \left( \begin{array}{ccc}
+4 & - \sqrt 2 \\
+-\sqrt 2& 3 \end{array} \right)\]
+axis x~j~=c $\lambda_{j}^{ -1/2}$  e~j~
+
+```{r echo= FALSE}
+A<- matrix(c(4, -sqrt(2), -sqrt(2), 3), nrow=2, ncol=2)
+```
+A=
+```{r}
+A
+```
+ eigenvalues $\lambda_{j}$ = 
+```{r}
+eigVal<-eigen(A)$values
+eigVal
+```
+eigenvectors e~j~=
+```{r}
+eigVec<-eigen(A)$vectors
+eigVec
+```
+for c^2^=1,   
+minor axis is x~1~= 1 /$\sqrt 5$=$\sqrt 5$/5  e~1~, e~1~=[-0.81, 0.57]'  
+major axis is x~2~=1/ $\sqrt 2$=$\sqrt 2$/2  e~2~, e~2~=[0.57,-0.81]'  
+for c^2^=4  
+minor axis is x~1~= 2 /$\sqrt 5$=2$\sqrt 5$/5  e~1~,  e~1~=[-0.81, 0.57]'  
+major axis is x~2~=2/ $\sqrt 2$=$\sqrt 2$  e~2~,  e~2~=[0.57,-0.81]'   
+If we sketch the ellipses, we get 
+```{r}
+library(car)
+ellipse(c(0, 0), shape=A, radius=0.98, col="red", lty=2,add=FALSE)
+ellipse(c(0, 0), shape=A/4, radius=0.98, col="red", lty=2)
+arrows(0, 0, sqrt(eigVal[1]) * eigVec[ , 1][1], sqrt(eigVal[1]) * eigVec[ , 1][2])
+arrows(0, 0, sqrt(eigVal[2]) * eigVec[ , 2][1], sqrt(eigVal[2]) * eigVec[ , 2][2])
+```
+
+
+The two ellipse have same axes direction and length increase as c^2^ increase
+
+###2.38
+```{r}
+library(car)
+A<-matrix(c(13,-4,2,-4,13,-2,2,-2,10),3,3)
+eigen(A,only.values=FALSE)
+```
+According to Extended Cauchy-Schwarz Inequality
+The maximum is 18, while the mnimum is 9
+
+## Problem 2
+### 1
+(1)In order to prove:
+\[
+\begin{pmatrix} 
+A & O  \\
+C & B \\
+\end{pmatrix}^{-1}=
+\begin{pmatrix} 
+A_{-1} & O  \\
+-B^{-1}CA^{-1} & B^{-1} \\
+\end{pmatrix} \]
+We need to prove:
+\[
+\begin{pmatrix} 
+A_{-1} & O  \\
+-B^{-1}CA^{-1} & B^{-1} \\
+\end{pmatrix} \times
+\begin{pmatrix} 
+A & O  \\
+C & B \\
+\end{pmatrix}= 
+\begin{pmatrix}
+AA^{-1} & O \\
+-B^{-1}CA^{-1}A+B^{-1}C & B^{-1}B \\
+\end{pmatrix} =
+\begin{pmatrix}
+I & O \\
+O & I\\
+\end{pmatrix}
+\]
+(2)And in order to prove 
+\[
+\begin{pmatrix}
+A & D \\
+O & B \\
+\end{pmatrix}^{-1}=
+\begin{pmatrix}
+A^{-1} & -A^{-1}DB^{-1} \\
+O & B^{-1}\\
+\end{pmatrix}
+\]
+We need to prove:
+\[
+\begin{pmatrix}
+A^{-1} & -A^{-1}DB^{-1} \\
+O & B^{-1}\\
+\end{pmatrix} \times
+\begin{pmatrix}
+A & D \\
+O & B \\
+\end{pmatrix}= 
+\begin{pmatrix}
+A^{-1}A & A^{-1}D-A^{-1}DB^{-1}B \\
+O B^{-1}B\\
+\end{pmatrix}=
+\begin{pmatrix}
+I & O \\
+O & I  \\
+\end{pmatrix}
+\]
+
+### 2
+Let T=A+CBD   
+In order to prove T^-1^=A^-1^-A^-1^CB(B+BDA^-1^CB)^-1^BDA^-1^  
+We need to prove (A^-1^-A^-1^CB(B+BDA^-1^CB)^-1^BDA^-1^)T=I  
+In other words,     
+(A^-1^-A^-1^CB(B+BDA^-1^CB)^-1^BDA^-1^)(A+CBD)   
+=A^-1^-A^-1^CB(B+BDA^-1^CB)^-1^BDA^-1^A+A^-1^CBD-A^-1^CB(B+BDA^-1^CB)^-1^BDA^-1^CBD  
+=I-(A^-1^CB(B+BDA^-1^CB)^-1^)(BD-(B+BDA^-1^CB)D+BDA^-1^CBD)       
+=I-(A^-1^CB(B+BDA^-1^CB)^-1^)O  
+=I    
+In particular, when q=1, B=1, C=c,D=d'  
+We want to show that (A+cd')^-1^ =A^-1^ -${ {A^{-1}cd'A^{-1} }\over {1+d'A~{-1}c }}$  
+substitue into T,         
+T^-1^=(A+cd')^-1^=A^-1^-A^-1^c(1+d'A^-1^c)^-1^d'A^-1^     
+Since d'A^-1^c is scalar    
+T^-1^=A^-1^-A^-1^cd'A^-1^ /(1+d'A^-1^c)
+
+### 3
+For A=\[
+\begin{pmatrix}
+A_{11} & A_{12} \\
+A_{21} & A_{22} \\
+\end{pmatrix}
+\]
+In order to state clearly in the deduction process, we use B to denote A^-1^=B=\[
+\begin{pmatrix}
+B_{11} & B_{12}\\
+B_{21} & B_{22}\\
+\end{pmatrix}=
+\begin{pmatrix}
+A_{11}^{-1}+A_{11}^{-1}A_{12}A_{22·1}^{-1}A_{21}A_{11}^{-1} & -A_{11}^{-1}A_{12}A_{22·1}^{-1}\\
+-A_{22·1}^{-1}A_{21}A_{11}^{-1} & A_{22·1}^{-1}
+\end{pmatrix}
+\]
+where A~22·1~=A~22~ - A~21~A~11~^-1^A~12~   
+We can prove for B~11~, B~12~, B~21~, B~22~   
+B~11~A~11~+B~12~A~21~= A~11~^-1^A~11~ + A~11~^-1^A~12~A~22·1~^-1^A~21~A~11~^-1^A~11~-A~11~^-1^A~12~A~22·1~^-1^A~21~    
+=I+O    
+=I    
+B~11~A~12~+B~12~A~22~=A~11~^-1^A~12~+A~11~^-1^A~12~A~22·1~^-1^A~21~A~11~^-1^A~12~ - A~11~^-1^A~12~A~22·1~^-1^A~21~    
+= A~11~^-1^A~12~ + A~11~^-1^A~12~A~22`1~^-1^(A~21~A~11~^-1^A~12~-A~22~)    
+= A~11~^-1^A~12~ + A~11~^-1^A~12~A~22·1~(-A~22·1~)    
+=O    
+B~21~A~11~+B~22~A~21~ = -A~21~^-1^A~21~ + A~22·1~^-1^ A~21~ =  O    
+B~21~A~12~+B~22~A~22~ = -A~22·1~A~21~A~11~^-1^A~12~ + A~22·1^-1^~A~22~    
+= A~22·1~^-1^(A~22~-A~21~A~11~^-1^A~12~)    
+=A~22·1~^-1^A~22·1~^-1^
+= I   
+Thus, BA=I,     
+A^-1^=B=\[
+\begin{pmatrix}
+B_{11} & B_{12}\\
+B_{21} & B_{22}\\
+\end{pmatrix}=
+\begin{pmatrix}
+A_{11}^{-1}+A_{11}^{-1}A_{12}A_{22·1}^{-1}A_{21}A_{11}^{-1} & -A_{11}^{-1}A_{12}A_{22·1}^{-1}\\
+-A_{22·1}^{-1}A_{21}A_{11}^{-1} & A_{22·1}^{-1}
+\end{pmatrix}
+\]

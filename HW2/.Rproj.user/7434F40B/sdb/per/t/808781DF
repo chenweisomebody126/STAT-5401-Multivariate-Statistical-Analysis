@@ -1,0 +1,17 @@
+{
+    "contents" : "## ---- ex2-1 ----\nx = c(1,3,2)\ny = c(-2,1,-1)\n3*x\nx + y\nprint(Lx <- sqrt(sum(x^2))) #length of x\nprint(Ly <- sqrt(sum(y^2))) #length of y\n\n## ---- ex2-1c ----\nprint(cos.theta <- sum(x*y)/(Lx*Ly)) #cos(theta)\nprint(theta <- acos(cos.theta)) #angle between x and y\ntheta/pi*180 #convert radians to degrees\nprint(L3x <- sqrt(sum((3*x)^2))) #length of 3*x\nL3x/Lx\n\n## ---- ex2-3 ----\nprint(A <- matrix(c(3,1,-1,5,2,4), nrow=2, ncol=3))\nprint(A <- matrix(c(3,-1,2,1,5,4), nrow=2, ncol=3, byrow=TRUE))\nt(A)\n\n## ---- ex2-4 ----\nprint(A <- matrix(c(0,1,3,-1,1,1), nrow=2, ncol=3))\nprint(B <- matrix(c(1,2,-2,5,-3,1), nrow=2, ncol=3))\n4*A\nA + B\n\n## ---- ex2-5 ----\nprint(A <- matrix(c(3,1,-1,5,2,4), nrow=2, ncol=3))\nprint(B <- matrix(c(-2, 7, 9), nrow=3, ncol=1))\nprint(C <- matrix(c(2,1,0,-1), nrow=2, ncol=2))\n\n## ---- ex2-5c ----\nA %*% B\nC %*% A\n\n## ---- ex2-6 ----\nprint(A <- matrix(c(3,5,5,-2), nrow=2, ncol=2))\nisSymmetric(A)\nprint(B <- matrix(c(3,4,6,-2), nrow=2, ncol=2))\nisSymmetric(B)\n\n## ---- ex2-7 ----\nprint(A <- matrix(c(3,4,2,1), nrow=2, ncol=2))\nprint(Ai <- solve(A)) #inverse matrix of A\nA %*% Ai\nAi %*% A\n\n## ---- ex2-8 ----\nprint(A <- matrix(c(1,-5,-5,1), nrow=2, ncol=2))\neigen(A)\n\n## ---- ex2-9 ----\nprint(A <- matrix(c(13,-4,2,-4,13,-2,2,-2,10), nrow=3, ncol=3))\neigen(A)\n\n## ---- ex2-10 ----\neigen(matrix(c(3,-sqrt(2),-sqrt(2),2), nrow=2, ncol=2))",
+    "created" : 1454642349313.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3739102417",
+    "id" : "808781DF",
+    "lastKnownWriteTime" : 1454642319,
+    "path" : "~/Downloads/chapter2 (1).R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

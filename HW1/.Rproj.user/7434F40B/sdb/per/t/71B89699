@@ -1,0 +1,18 @@
+{
+    "contents" : "install.packages(\"alr4\")\nlibrary(alr4)\np1_4 <-read.table(\"http://users.stat.umn.edu/~guxxx192/courses/wichern_data/p1-4.dat\")\ncolnames(p1_4) <- c(\"sales\",\"profits\")\nscatterplot(sales ~ profits, data= p1_4, smoother= F, reg.line= F)\np1_4_new <-p1_4[,c(\"sales\",\"profits\")]\nprint(colMeans(p1_4_new))\nS=var(p1_4_new)\nS[1,1] \nS[2,2] \nS[1,2]\nc(S[1,1] ,S[2,2],S[1,2])\nS_1_1  S_2_2  S_1_2\ncor(p1_4_new)\n\ncolnames(p1_4) <- c(\"sales\",\"profits\",\"assets\")\nscatterplotMatrix(t1__8[,1:6], data=t1_8, diagram=\"boxplot\", smoother=F, reg.line=F)",
+    "created" : 1453957715484.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2826257540",
+    "id" : "71B89699",
+    "lastKnownWriteTime" : 1454602802,
+    "path" : "~/Documents/MultiAnaly/HW1/p1_4.R",
+    "project_path" : "p1_4.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

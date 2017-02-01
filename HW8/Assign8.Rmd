@@ -1,0 +1,237 @@
+---
+title: "Assign8"
+output: html_document
+---
+###Wei Chen, 5207679
+Q6.17
+The data in Table 6.8 were collected to test two psychological models of numerical cognition. Does the processing of numbers depend on the way the numbers are presented(words, Arabic digits)? Thirty-two subjects were required to make a series of quick numerical judgements about two numbers presented as either two number words("two","four") or two Arabic digits("2","4"). The subjects were asked to respond "same" if the two numbers had the same numerical parity(both even or both odd). Half of the subjects were assgigned a block of Arabic digit trials, followed by a block of number word trials, and half of the subjects recieved the blocks of trials in the reverse order. Within each block, the order of "same" and "different" parity and format, the median reaction times for correct responds were recorded for each subject. Here     
+X~1~= meadian reaction time for world format-different parity combination     
+X~2~= meadian reaction time for world format-same parity combination      
+X~3~= meadian reaction time for Arabic format-different parity combination      
+X~4~= meadian reaction time for Arabic format-different parity combination      
+(a)Test for treatment effects using a repeated measures design. Set $/algha$=0.05.      
+(b)Construct 95% simultaneous confidence intervals for the constracts representing the number format effect, the parity type effect and the interaction effect. Interpret the resulting intervals.      
+(c)The absence of interaction supports the M model of numerical cognition, while the presence of interaction supports the C model of numerical cognition. Which model is supported in this experiment?     
+(d)For each subject, construct three difference scores correspending to the numer fomat constract, the parity type contrast, and the interaction contrast. Is a multivariate normal distribution a reasonable population model for these data? Explain.
+
+Solution:     
+(a)
+We set Null Hypothesis: all treatmeans effects are zero.
+```{r}
+URL<-'http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t6-8.dat'
+reaction<-read.table(URL, col.names=paste("Trtmt",1:4,sep=""))
+n<- nrow(reaction)
+q<-ncol(reaction)
+xbar<- colMeans(reaction)
+S<-cov(reaction)
+##define contrast matrix
+C=matrix(c(-1,1,1,-1,-1,-1,1,1,-1,1,-1,1),nrow=3,ncol=4)
+##T2 statistic for testing treatment effects
+print(T2<-n*t(C%*%xbar)%*%solve(C%*%S%*%t(C))%*%(C%*%xbar))
+alpha<-0.05
+print(Fval<-(n-1)*(q-1)/(n-q+1)*qf(alpha,df1=q-1,df2=n-q+1,lower.tail=FALSE))
+```
+
+We can see T2 is larger than scaled F value，so we need to reject the Null hypothsis: no treatment effects.      
+(b)
+```{r}
+lower<-C%*%xbar-sqrt(Fval)*sqrt(diag(C%*%S%*%t(C))/n)
+upper<-C%*%xbar+sqrt(Fval)*sqrt(diag(C%*%S%*%t(C))/n)
+matrix(cbind(lower,upper),3,2,dimnames=list(paste("Ctrst",1:3,sep=""),c("lower","upper")))
+```
+Effect of Arabic format interval:[-415.7364 -198.10738]     
+Effect of different parity intrval:[130.4567  282.19953]
+Interaction effect interval:[-76.6668   31.82305]     
+(c)     
+Use of arabic format results in shorter recogniton time whereas use of different parity can result in longer recognition time. The interaction is not significant and thus effect of using arabic format  is simiar ar both same and diffrent parity.     
+(d) 
+```{r}
+qqnorm(reaction[,1])
+qqline(reaction[,1])
+```
+      
+We can see the points qq plot do not fall along the straight line which implies that multivariate normal distribution is not reasonable.
+
+Q6.18
+Jolicoeur and Mosimann studies the relationship of size and shape for painted turtles.    
+(a)Test for equality of the two population mean vectors using $\alpha$=0.05     
+(b)If the hypothesis in Part a is rejected, find the lineat combination of mean components most reponsible for rejecting H~0~      
+(c)Find simulateous confidence intervals for the component mean differences. Compare with the Bonnferroni intervals    
+
+Solution:
+```{r}
+URL<-"http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t6-9.dat"
+carapace=read.table(URL,col.names=c("length","width","height","gender"))
+logCarapace<-cbind(log(carapace[,1:3]), carapace[,4])
+xbar<-aggregate(logCarapace[, 1:3], list(logCarapace[,4]), mean)
+x1bar<-t(xbar[1,-1])
+x2bar<-t(xbar[2,-1])
+logCarapace1<-logCarapace[logCarapace[,4]=="female",-4]
+logCarapace2<-logCarapace[logCarapace[,4]=="male",-4]
+S1<-cov(logCarapace1)
+S2<-cov(logCarapace2)
+```
+We set null hypothesis $\mu_{1}$=$\mu_{2}$, the mean of two population are equal.
+```{r}
+n1<-nrow(logCarapace1)
+n2<-nrow(logCarapace2)
+p<-ncol(logCarapace1)
+Spooled=((n1-1)*S1+(n2-1)*S2)/(n1+n2-2)
+print(T2<-t(x1bar-x2bar)%*%solve(Spooled*(1/n1+1/n2))%*%(x1bar-x2bar))
+alpha=0.05
+print(Fval<-(n1+n2-2)*p/(n1+n2-p-1)*qf(alpha,df1=p,df2=n1+n2-p-1,lower=FALSE))
+```
+We can see the T~2~ is larger than the scales F value, so we need to reject the equality of two population mean.     
+(b)     
+```{r}
+eigen(Spooled)
+```
+The linear combination that is most reponsible for rejection is [-0.64,-0.49,-0.586]'     
+(c)     
+```{r}
+lower<-(x1bar-x2bar)-sqrt(Fval)*sqrt(diag(Spooled)*(1/n1+1/n2))
+upper<-(x1bar-x2bar)+sqrt(Fval)*sqrt(diag(Spooled)*(1/n1+1/n2))
+print(simul<-matrix(cbind(lower,upper),3,2,dimnames=list(c("length","width","height"),c("lower","upper"))))
+tval<-qt(alpha/2/p,df=n1+n2-2,lower=FALSE)
+lower<-(x1bar-x2bar)-tval*sqrt(diag(Spooled)*(1/n1+1/n2))
+upper<-(x1bar-x2bar)+tval*sqrt(diag(Spooled)*(1/n1+1/n2))
+print(bonferr<-matrix(cbind(lower,upper),3,2,dimnames=list(c("length","width","height"),c("lower","upper"))))
+```
+The first is simultaneous intervals the seacond is Bonferroni intervals. The bonferroni intervals are narrower than the simultaneous intervals.      
+Q6.24     
+Researchers have suggested that a change in skull size over time is evidence of the interbreeding of a resident population with immigrant populations. Four measurements were mage od male Egyptian skulls for three different time periods. The measured variables are      
+X~1~= maximum breadth of skull(mm)      
+X~2~= basibregmatic height of skull(mm)     
+X~3~= basibregmatic length of skull(mm)     
+X~4~= nasal height of skull(mm)     
+Construct a one-way MANOVA of the Egyptian skull data. Use $\alpha$==0.05. Construct 95% simultaneous confidence intervals to determine which mean components differ among the populations representes by the three time periods. Are the usual MANOVA assumptions realistic for these data? Explain.     
+
+Solution:      
+(a)one-way MANOVA
+```{r}
+URL<-"http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t6-13.dat"
+skull=read.table(URL,col.names=paste("X",1:5,sep=""))
+xbargroup<-aggregate(skull[, 1:4], list(skull[,5]), mean)
+x1bar<-t(xbargroup[1,-1])
+x2bar<-t(xbargroup[2,-1])
+x3bar<-t(xbargroup[3,-1])
+skull1<-skull[skull[,5]==1,-5]
+skull2<-skull[skull[,5]==2,-5]
+skull3<-skull[skull[,5]==3,-5]
+S1<-cov(skull1)
+S2<-cov(skull2)
+S3<-cov(skull3)
+n1<-nrow(skull1)
+n2<-nrow(skull2)
+n3<-nrow(skull3)
+n = n1 + n2 + n3
+p = 4
+W = (n1 - 1) * S1 + (n2 - 1) * S2 + (n3 - 1) * S3
+xbar = (n1 * x1bar + n2 * x2bar + n3 * x3bar)/(n1 + n2 + n3)
+B = n1 * (x1bar-xbar)%*%t(x1bar-xbar) + n2*(x2bar-xbar)%*%t(x2bar-xbar) +n3 *(x3bar-xbar)%*%t(x3bar-xbar)
+Lambda = det(W)/det(B + W)
+(n - p - 2)/p * (1 - sqrt(Lambda))/sqrt(Lambda)
+alpha = 0.05
+qf(alpha, df1=2*p, df2=2*(n-p-2), lower.tail=FALSE)
+```
+Because the lamda is larger than scaled F quantile, we can reject the null hypothesis: mean of each time period is equal.
+(b)CI 
+```{r}
+g = 3
+# simultaneous CIs for components of (tau1 - tau3)
+lower13<-(x1bar - x3bar) - qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) *sqrt(diag(W)/(n-g) * (1/n1 + 1/n3))
+upper13<-(x1bar - x3bar) + qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) *sqrt(diag(W)/(n-g) * (1/n1 + 1/n3))
+
+# simultaneous CIs for components of (tau1 - tau2)
+lower12<-(x1bar - x2bar) - qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) * sqrt(diag(W)/(n-g) * (1/n1 + 1/n2))
+upper12<-(x1bar - x2bar) + qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) * sqrt(diag(W)/(n-g) * (1/n1 + 1/n2))
+
+# simultaneous CIs for components of (tau2 - tau3)
+lower23<-(x2bar - x3bar) - qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) * sqrt(diag(W)/(n-g) * (1/n2 + 1/n3))
+upper23<-(x2bar - x3bar) + qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) *sqrt(diag(W)/(n-g) * (1/n2 + 1/n3))
+matrix(cbind(lower13,upper13,lower12,upper12,lower23,upper23),4,6,dimnames = list(paste("X",1:4,sep=""),c("lower13","upper13","lower12","upper12","lower23","upper23")))
+```
+No components significantly differ among the populations.     
+(c)MANOVA assumption realitic?      
+```{r}
+qqnorm(skull2[,1])
+qqline(skull2[,1])
+```
+      
+We can see the points qq plot do not fall along the straight line which implies that multivariate normal distribution is not reasonable.
+
+Q6.25     
+Construct a one-way MANOVA of the crude-oil data.  Construct 95% simultaneous confidence intervals to determine which mean components differ among the populations(use transformations of data to make them more closely conform to the usual MANOVA assumptions)      
+
+Solution:      
+(a)one-way MANOVA
+```{r}
+library(car)
+URL<-"http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t11-7.dat"
+oil<-read.table(URL,col.names=paste("X",1:6,sep=""))
+oilnew<-oil[,-6]
+```
+After we look at the data, We find that there is several entries in X3 equal 0 for which we can not use Box-Cox tranformation. So we set thess entries be 0.00000001 and run the power transformation again.
+```{r}
+oilnew[oilnew[]==0]<-oilnew[oilnew[]==0]+0.00000001
+res<-powerTransform(with(oilnew,cbind(X1,X2,X3,X4,X5))~ 1)
+summary(res)
+lambda<-c(1,0.5,0.25,-0.25,0.25)
+oilnew_t<-bcPower(with(oilnew,cbind(X1,X2,X3,X4,X5)),lambda)
+xbargroup<-aggregate(oilnew_t[, 1:5], list(oil[,6]), mean)
+x1bar<-t(xbargroup[1,-1])
+x2bar<-t(xbargroup[2,-1])
+x3bar<-t(xbargroup[3,-1])
+oil1<-oilnew_t[oil[,6]=="Wilhelm",]
+oil2<-oilnew_t[oil[,6]=="SubMuli",]
+oil3<-oilnew_t[oil[,6]=="Upper",]
+S1<-cov(oil1)
+S2<-cov(oil2)
+S3<-cov(oil3)
+n1<-nrow(oil1)
+n2<-nrow(oil2)
+n3<-nrow(oil3)
+n = n1 + n2 + n3
+p = 5
+W = (n1 - 1) * S1 + (n2 - 1) * S2 + (n3 - 1) * S3
+xbar = (n1 * x1bar + n2 * x2bar + n3 * x3bar)/(n1 + n2 + n3)
+B = n1 * (x1bar-xbar)%*%t(x1bar-xbar) + n2*(x2bar-xbar)%*%t(x2bar-xbar) +n3 *(x3bar-xbar)%*%t(x3bar-xbar)
+Lambda_ll = det(W)/det(B + W)
+(n - p - 2)/p * (1 - sqrt(Lambda_ll))/sqrt(Lambda_ll)
+alpha = 0.05
+qf(alpha, df1=2*p, df2=2*(n-p-2), lower.tail=FALSE)
+```
+Because the Lambda_ll is larger than scaled F quantile, we can reject the null hypothesis: mean of each time population is equal.
+(b)CI 
+
+```{r}
+g = 3
+# simultaneous CIs for components of (tau1 - tau3)
+lower13<-(x1bar - x3bar) - qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) *sqrt(diag(W)/(n-g) * (1/n1 + 1/n3))
+upper13<-(x1bar - x3bar) + qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) *sqrt(diag(W)/(n-g) * (1/n1 + 1/n3))
+
+# simultaneous CIs for components of (tau1 - tau2)
+lower12<-(x1bar - x2bar) - qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) * sqrt(diag(W)/(n-g) * (1/n1 + 1/n2))
+upper12<-(x1bar - x2bar) + qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) * sqrt(diag(W)/(n-g) * (1/n1 + 1/n2))
+
+# simultaneous CIs for components of (tau2 - tau3)
+lower23<-(x2bar - x3bar) - qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) * sqrt(diag(W)/(n-g) * (1/n2 + 1/n3))
+upper23<-(x2bar - x3bar) + qt(alpha/(p*g*(g-1)), df=n-g, lower.tail=FALSE) *sqrt(diag(W)/(n-g) * (1/n2 + 1/n3))
+matrix(cbind(lower13,upper13,lower12,upper12,lower23,upper23),5,6,dimnames = list(paste("X",1:5,sep=""),c("lower13","upper13","lower12","upper12","lower23","upper23")))
+```
+X5 component in population 3 is larger than other populations.      
+X4 component in population 2 is smaller than other populations.     
+X2 component in population 2 is smaller than  population 3.     
+X1 component in population 2 is larger than population 3.
+
+
+
+
+
+
+
+
+
+
+
+

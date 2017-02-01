@@ -1,0 +1,18 @@
+{
+    "contents" : "---\ntitle: \"HW4\"\noutput: html_document\n---\n\nExercise 4.19\nLet X~1~,X~2~,...,X~20~ be a random sample of size n=20 from an N~6~($\\mu$, $\\Sigma$) population.\n(a)The distribution of (X~1~-$\\mu$)'$\\Sigma$(X~1~ $\\mu$)      \n(b)The distribution of $\\bar{X}$ and $sqrt{n}(\\bar{X}-\\mu)$    \n(c)The distribution of (n-1)S   \n\nSolution:   \n(a)   \nLet Z=$\\sigma^{-1/2}(X_{1}-\\mu)$,then  (X~1~-$\\mu$)'$\\Sigma$(X~1~ $\\mu$)=Z'Z.  \nSince X~1~ ~N ~6~($\\mu$, $\\Sigma$)and Z~N(0,1), Therefore, the squred standard normal distribution is $\\chi^{2}_{1}$ distribution with 1 degree of freedom.   \n(X~1~-$\\mu$)'$\\Sigma$(X~1~ $\\mu$)~ $\\chi^{2}_{1}$   \n(b) \n$\\bar{X}$ =$\\frac{1}{n}\\sum_{i=1}^{20}X_{i}$ ~ N~6~($\\mu$,$\\Sigma$).         $\\sqrt{n}(\\bar{X}-\\mu)$ ~ N~6~(0,$\\Sigma$)                  \n(c) (n-1)S follows the Wishart distribution with n-1 degrees of freedom. (n-1)S~ W~19~($\\Sigma$)\n\nExercise 4.20\nSpecify the B(19S)B' in each case     \n(a) B=\\[ \\left( \\begin{array}{ccc}\n1 & -1/2 & -1/2 & 0 & 0 & 0 \\\\\n0 & 0 & 0 &-1/2 &-1/2 &-1/2 \\\\\n\\end{array} \\right)\\] \n(b)B=\\[ \\left( \\begin{array}{ccc}\n1 & 0 & 0 & 0 & 0 & 0 \\\\\n0 & 0 & 1 & 0 & 0 & 0 \\\\\n\\end{array} \\right)\\] \n\nSolution:\nLet X=B'(19S)B\n(X~1~-$\\mu$)'$\\Sigma$(X~1~ $\\mu$)~ $\\chi^{2}_{1}$   \n$\\bar{X}$ ~ N~6~($\\mu$,$\\Sigma$)    \n$\\sqrt{n}(\\bar{X}-\\mu)$ ~ N~6~(0,$\\Sigma$)        \n(n-1)S~ W~19~($\\Sigma$)           \n(a)   \n\n```{r}\nB<- matrix(c(1, -0.5,-0.5, 0, 0,0,0,0,0,-0.5,-0.5,-0.5),nrow=2, ncol=6 )\nX<-B%*%cov(B)%*%t(B)\nmu<-colMeans(B)\nsigma<- cov(B)\nprint(mu)\nprint(sigma)\n```\n\n(b)   \n```{r}\nB<- matrix(c(1, 0,0, 0, 0,0,0,0,1,0,0,0),nrow=2, ncol=6 )\nX<-B%*%cov(B)%*%t(B)\nmu<-colMeans(B)\nsigma<- cov(B)\nprint(mu)\nprint(sigma)\n```\n\n\nYou can also embed plots, for example:\n\n```{r, echo=FALSE}\nplot(cars)\n```\n\nNote that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.\n",
+    "created" : 1456846247077.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "572528398",
+    "id" : "7C6C9E74",
+    "lastKnownWriteTime" : 1456854439,
+    "path" : "~/Documents/MultiAnaly/HW4/HW4.Rmd",
+    "project_path" : "HW4.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}

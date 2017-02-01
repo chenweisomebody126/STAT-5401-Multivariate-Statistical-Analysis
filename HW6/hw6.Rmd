@@ -1,0 +1,164 @@
+---
+title: "hw6"
+output: html_document
+---
+###Wei Chen
+###5207679
+### 5.7
+Use the sweat data in Table 5.1. Find simultaneous 95% T^2^ confidence intervals for $\mu_{1}$, $\mu_{2}$, and $\mu_{3}$ using Result 5.3. Construct the 95% Bonferroni intervals using (5-29). Compare the two sets of intervals.     
+Solution:     
+First we impot data from table 5.1. 
+```{r}
+URL <- "http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t5-1.dat"
+sweat <- read.table(URL,col.names=c("rate","sodium","potassium"))
+```
+Then we calculate the centre of interval as xbar. We calculate the sample covariance as scov.
+```{r}
+xbar<-colMeans(sweat)
+scov<-cov(sweat)
+```
+We calculate the radius around xbar and lower and upper bound of simultaneous T^2^ interval.
+```{r}
+n<-nrow(sweat)
+p<-ncol(sweat)
+alpha<-0.05
+radius<-sqrt((n-1)*p/(n-p)*qf(alpha, df1=p,df2=n-p,lower.tail=FALSE))
+print(lower <- xbar-radius*sqrt(diag(scov)/n))
+print(upper <-xbar+radius*sqrt(diag(scov)/n))
+```
+We calculate the radius and lower and uppern bound of Bonferroni intervals.
+```{r}
+radius.bon<- qt(alpha/(2*p),df=n-1, lower.tail=FALSE)
+print(lower.bon<- xbar-radius.bon*sqrt(diag(scov)/n))
+print(upper.bon<- xbar+radius.bon*sqrt(diag(scov)/n))
+```
+Simultaneous T^2^ interval is wider than Bonferoni intervals.
+
+### 5.20
+A wildlife ecologist measured x~1~= tail length(in millimeters) and x^2^ = wing length(in millimeters) for a sample of n=45 femaile hook-billed kites. These data are displayed in Table 5.12. Using the data in the table,     
+(a)Find and sketch 95% confidence ellipse for the population means $\mu_{1}$,$\mu_{2}$.Suppose it is known that $\mu_{1}$=190mm and $\mu_{2}$=275mm for male hook-billed kites.Are these plausible values for the mean tail length and mean wing length for the female birds? Explain.     
+(b)Construct the simultaneous 95% T^2^ -intervals for $\mu_{1}$ and $\mu_{2}$ and 95% Bonferroni intervals for $\mu_{1}$ and $\mu_{2}$. Compare the two sets of intervals. What advantage, if any, do the T^2^ -intervals have over the Bonferroni intervals?   
+(c) Is the bivariate normal distribution a viable population model? Explain with reference to Q-Q plots and a scatter plot.     
+Solution:     
+(a) Draw the ellips
+```{r}
+URL<- 'http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t5-12.dat'
+bird<-read.table(URL,col.names= c('tail','wing'))
+library(car)
+res<- powerTransform(with(bird,cbind(tail,wing))~1)
+summary(res)
+testTransform(res,lambda=c(0.75,2.75))
+x1<- (bird$tail)^0.75
+x2<- (bird$wing)^2.75
+x=cbind(x1,x2)
+p<-ncol(x)
+n<-nrow(x)
+xbar<-colMeans(x)
+s<-cov(x)
+alpha<- 1-0.95
+radius<- sqrt(p*(n-1)/(n-p)*qf(alpha,df1=p, df2=n-p,lower.tail=FALSE))
+ellipse(center=xbar,shape= s/n, radius=radius, add=FALSE)
+```
+
+Check whether interval cantains $\mu_{1}$=190mm and $\mu_{2}$=275mm. We can see the male mean vectoe falls in the 95% interval and thus we can reject it.
+```{r}
+ellipse(center=xbar,shape= s/n, radius=radius, add=FALSE)
+points(190^0.75, 275^2.75, pch=20)
+```
+              
+(b) For simultaneous T^2^ interval
+```{r}
+lower_x<-xbar-sqrt(diag(s)/n)*radius
+upper_x<-xbar+sqrt(diag(s)/n)*radius
+lower_bird<- c((lower_x[1])^(1/0.75),(lower_x[2])^(1/2.75))
+upper_bird<- c((upper_x[1])^(1/0.75),(upper_x[2])^(1/2.75))
+print(lower_bird)
+print(upper_bird)
+```
+
+For Bonferroni interval
+```{r}
+radius_bon_x<-qt(alpha/(2*p),df=n-1,lower.tail=FALSE)
+lower_bon_x<-xbar-radius_bon_x*sqrt(diag(s)/n)
+upper_bon_x<-xbar+ radius_bon_x*sqrt(diag(s)/n)
+lower_bon_bird<- c((lower_bon_x[1])^(1/0.75),(lower_bon_x[2])^(1/2.75))
+upper_bon_bird<- c((upper_bon_x[1])^(1/0.75),(upper_bon_x[2])^(1/2.75))
+print(lower_bon_bird)
+print(upper_bon_bird)
+```
+We can see that for each component mean, the Bonferroni inteval falls within the T^2^ interval.
+If we are only interested in the component menas, the Bonferroni intervals provide more precise estimate thant the T^2^ intervals.       
+(c)According to the QQ plots and scatter, we can still find no all points in QQ plots fall along the straight line. So bivariate normal distribution is not viable for this population distribution.
+```{r}
+par(mfrow=c(1,3))
+qqnorm(bird$tail)
+qqline(bird$tail)
+qqnorm(bird$wing)
+qqline(bird$wing)
+plot(bird$tail, bird$wing)
+```
+
+###5.22
+A portion of the data contained in Table 6.10 is reproduced in Table 5.13. These data represent various costs associated with transporting milk from farms to dairy plants for gasoline traucks. Only the first 25 multivariate observations for gasoline trucks are given. Obseravtions 9 and 21 have been ideentified as outliers from the full data set of 36 observations.      
+(a) Construct Q-Q plots of the marginal distributions of fuel, repair, and capital costs. Also, construct the three possible scatter diagrams form the pairs of observations on diferent variables. Are the outliers eveident? Repeat the Q-Q plots and the sactter diagrams with the apparent outliers removed. Do the data now appear to be normally distributed? Discuss.     
+(b) Construct 95% Bonferroni intervals for the individual cost means. Also, find the 95% T^2^ intervals. Compare the two sets of intervals.      
+Solution：
+(a) Put the QQ plots of marginal distributions in the first row of graph and put the scatter diagrams in the second row. We can use functon identify to see the outlier in QQ plots where observation 9 and 21 are evident. 
+```{r}
+URL<-'http://users.stat.umn.edu/~guxxx192/courses/wichern_data/t5-13.dat'
+milk<- read.table(URL, col.names=c('fuel','repair','capital'))
+par(mfrow=c(2,3))
+qqf<-qqnorm(milk$fuel)
+identify(qqf)
+qqline(milk$fuel)
+qqr<-qqnorm(milk$repair)
+identify(qqr)
+qqline(milk$repair)
+qqc<-qqnorm(milk$capital)
+identify(qqc)
+qqline(milk$capital)
+plot(milk$fuel~ milk$repair)
+points(milk[c(9,21),c(2)],milk[c(9,21),c(1)], pch=21,col='red')
+plot(milk$repair~ milk$capital)
+points(milk[c(9,21),c(3)],milk[c(9,21),c(2)], pch=21,col='red')
+plot(milk$capital~ milk$fuel)
+points(milk[c(9,21),c(1)],milk[c(9,21),c(3)], pch=21,col='red')
+```
+      
+Remove the outlier and see again. It looks more normal distributed after we removed the outliers.
+```{r}
+milk<-milk[-c(9,21),]
+par(mfrow=c(2,3))
+qqf<-qqnorm(milk$fuel)
+qqline(milk$fuel)
+qqr<-qqnorm(milk$repair)
+qqline(milk$repair)
+qqc<-qqnorm(milk$capital)
+qqline(milk$capital)
+plot(milk$fuel~ milk$repair)
+plot(milk$repair~ milk$capital)
+plot(milk$capital~ milk$fuel)
+```
+      
+(b)
+For the Bonferroni interval for individual cost means
+```{r}
+p<-nrow(milk)
+n<-ncol(milk)
+alpha<-1-0.95
+xbar<-colMeans(milk)
+s<-cov(milk)
+radius_bon_m<-qt(alpha/(2*p),df=n-1,lower.tail=FALSE )
+print(lower_bon_m<-xbar-radius_bon_m*sqrt(diag(s)/n))
+print(upper_bon_m<-xbar+radius_bon_m*sqrt(diag(s)/n))
+```
+      
+For the T^2^ interval for individual cost means
+```{r}
+radius_m<-sqrt(p*(n-1)/(n-p)*qf(alpha, df1=p,df2=n-p,lower.tail=FALSE))
+print(lower_m<-xbar-radius_m*sqrt(diag(s)/n))
+print(upper_m<-xbar+radius_m*sqrt(diag(s)/n))
+```
+      
+We can see the Bonferroni intervals is much narrower than the T^2^ intervals.
+
